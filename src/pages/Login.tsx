@@ -31,8 +31,9 @@ export const Login: React.FC = () => {
       } else {
         setError(data.error);
       }
-    } catch (err) {
-      setError('Something went wrong. Please try again.');
+    } catch (err: any) {
+      console.error('Login error:', err);
+      setError(err.message || 'Something went wrong. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -46,7 +47,7 @@ export const Login: React.FC = () => {
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-white">
               <Globe size={24} />
             </div>
-            <span className="text-2xl font-bold tracking-tight text-slate-900">GlobalSoft</span>
+            <span className="text-2xl font-bold tracking-tight text-slate-900">AIVEX SOCIALMARKET</span>
           </Link>
           <h2 className="mt-6 text-3xl font-bold text-slate-900">Welcome back</h2>
           <p className="mt-2 text-sm text-slate-500">

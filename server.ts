@@ -13,7 +13,8 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const db = new Database("market.db");
+const dbPath = process.env.NODE_ENV === "production" ? path.join("/tmp", "market.db") : "market.db";
+const db = new Database(dbPath);
 const JWT_SECRET = process.env.JWT_SECRET || "globalsoft-secret-key";
 
 // Initialize Database
@@ -92,10 +93,14 @@ try {
 } catch (e) {}
 
 
+const app = express();
+const httpServer = createServer(app);
+const wss = new WebSocketServer({ server: httpServer });
+
+// Export for Vercel
+export default app;
+
 async function startServer() {
-  const app = express();
-  const httpServer = createServer(app);
-  const wss = new WebSocketServer({ server: httpServer });
 
   app.use(express.json());
 
@@ -283,9 +288,12 @@ async function startServer() {
     });
   }
 
-  httpServer.listen(3000, "0.0.0.0", () => {
-    console.log("Server running on http://localhost:3000");
-  });
+  // Only listen if not in a serverless environment
+  if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
+    httpServer.listen(3000, "0.0.0.0", () => {
+      console.log("Server running on http://localhost:3000");
+    });
+  }
 }
 
 startServer();
